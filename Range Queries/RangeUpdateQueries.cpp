@@ -66,6 +66,7 @@ void update(int v,int tl,int tr,int l,int r,int u){
     int tm= (tl+tr)/2;
     update(v<<1,tl,tm,l,min(r,tm),u);
     update(v<<1|1,tm+1,tr,max(l,tm+1),r,u);
+
 }
 
 int32_t main(){
