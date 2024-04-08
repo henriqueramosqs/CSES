@@ -9,41 +9,36 @@ using namespace std;
 #define int long long 
 #define ff first
 #define ss second
+#define endl "\n"
 #define pq priority_queue
 typedef vector<int> vi;
+typedef vector<vi> vvi;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
 typedef vector<pair<int,int> > vpp;
-const int MAXN = 5000;
-int n;
-vi a,psum;
-
-int dpmax[MAXN][MAXN];  
 
 int32_t main(){
     sws
-    memset(dpmax,0LL,sizeof(dpmax));
+    int n,k;
+    cin>>n>>k;
+    vi p(k);
+    rep(i,0,k)cin>>p[i];
+    sort(p.begin(),p.end());
+    bool dp[n+1];
+    memset(dp,true,sizeof(dp));
+    dp[0]=false;
 
-    int n;cin>>n;   
-    a.resize(n);
-    psum.resize(n+1);
-    psum[0]=0;
-    rep(i,0,n){
-        cin>>a[i]; 
-        psum[i+1]=psum[i]+a[i];
-    }
-
-    for(int l=n-1;l>=0;l--){
-       rep(r,l,n){
-           if(l==r){
-                dpmax[l][r]=a[l];
-                continue;
-           }
-           dpmax[l][r] =  psum[r+1]-psum[l] -min(dpmax[l+1][r],dpmax[l][r-1]);
+    rep(i,1,n+1){
+        rep(j,0,k){
+            if(i-p[j]>=0){
+                dp[i]&=dp[i-p[j]];
+            }
         }
+        dp[i]^=1;
     }
 
-    cout<<dpmax[0][n-1];
+    rep(i,1,n+1){
+       dp[i]? cout<<"W":cout<<"L";
+    }
+}
  
-
-}   

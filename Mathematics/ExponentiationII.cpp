@@ -14,36 +14,27 @@ typedef vector<int> vi;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
 typedef vector<pair<int,int> > vpp;
-const int MAXN = 5000;
-int n;
-vi a,psum;
+const int MOD = 1e9+7;
 
-int dpmax[MAXN][MAXN];  
 
+int binexp(int a,int b,int m){
+    if(b==0)return 1;
+    if(b==1)return a;
+
+    int ans = binexp(a,b/2,m);
+    (ans*=ans)%=m;
+    if(b%2==1)(ans*=a)%=m;
+    return ans;
+}
 int32_t main(){
     sws
-    memset(dpmax,0LL,sizeof(dpmax));
+    int q;cin>>q;
 
-    int n;cin>>n;   
-    a.resize(n);
-    psum.resize(n+1);
-    psum[0]=0;
-    rep(i,0,n){
-        cin>>a[i]; 
-        psum[i+1]=psum[i]+a[i];
+    while(q--){
+        int a,b,c;
+        cin>>a>>b>>c;
+        cout<<binexp(a,binexp(b,c,MOD-1),MOD)<<endl;
     }
 
-    for(int l=n-1;l>=0;l--){
-       rep(r,l,n){
-           if(l==r){
-                dpmax[l][r]=a[l];
-                continue;
-           }
-           dpmax[l][r] =  psum[r+1]-psum[l] -min(dpmax[l+1][r],dpmax[l][r-1]);
-        }
-    }
+}
 
-    cout<<dpmax[0][n-1];
- 
-
-}   

@@ -8,42 +8,39 @@ using namespace std;
 #define output(x) for(auto c:x){cout<<c<<" ";}cout<<" ";
 #define int long long 
 #define ff first
+#define ld long double
 #define ss second
+#define endl "\n"
 #define pq priority_queue
 typedef vector<int> vi;
+typedef vector<vi> vvi;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
 typedef vector<pair<int,int> > vpp;
-const int MAXN = 5000;
-int n;
-vi a,psum;
+const int MAXN = 5*1e4+1;
+bitset<50000>reach[MAXN];
+bool visited[MAXN];
+vi adj[MAXN];
 
-int dpmax[MAXN][MAXN];  
-
+void dfs(int v){
+    visited[v]=true;
+    reach[v][v]=true;
+    for(auto c:adj[v]){
+        if(!visited[c])dfs(c);
+        reach[v]|=reach[c];
+    }
+}
 int32_t main(){
     sws
-    memset(dpmax,0LL,sizeof(dpmax));
-
-    int n;cin>>n;   
-    a.resize(n);
-    psum.resize(n+1);
-    psum[0]=0;
-    rep(i,0,n){
-        cin>>a[i]; 
-        psum[i+1]=psum[i]+a[i];
+    int n,m;cin>>n>>m;
+    rep(i,0,m){
+        int a,b;
+        cin>>a>>b;
+        adj[a].pb(b);
     }
 
-    for(int l=n-1;l>=0;l--){
-       rep(r,l,n){
-           if(l==r){
-                dpmax[l][r]=a[l];
-                continue;
-           }
-           dpmax[l][r] =  psum[r+1]-psum[l] -min(dpmax[l+1][r],dpmax[l][r-1]);
-        }
+    rep(i,1,n+1){
+        if(!visited[i])dfs(i);
     }
-
-    cout<<dpmax[0][n-1];
- 
-
-}   
+    rep(i,1,n+1)cout<<reach[i].count()<<" ";
+}

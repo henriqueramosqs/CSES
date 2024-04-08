@@ -14,36 +14,36 @@ typedef vector<int> vi;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
 typedef vector<pair<int,int> > vpp;
-const int MAXN = 5000;
-int n;
-vi a,psum;
+const int MAXN = 1e15;
+vi pots;
 
-int dpmax[MAXN][MAXN];  
-
+void process(){
+    pots.pb(1);
+    int idx = 0;
+    while(pots[idx]<=MAXN){
+        pots.pb(pots[idx]<<1);
+        idx++;
+    }
+}
 int32_t main(){
     sws
-    memset(dpmax,0LL,sizeof(dpmax));
+    process();
+    int n;cin>>n;
+    n++;
+    int ans=0;
 
-    int n;cin>>n;   
-    a.resize(n);
-    psum.resize(n+1);
-    psum[0]=0;
-    rep(i,0,n){
-        cin>>a[i]; 
-        psum[i+1]=psum[i]+a[i];
+    int i=1;
+
+    int sz = pots.size();
+    int lim = sz-1;
+    for(int step=sz/2;step>=1;step/=2){
+        while(lim-step>=0 && pots[lim-step]>=n)lim-=step;
+    }   
+
+
+    rep(i,1,lim+1){
+        ans += pots[i-1]*(n/pots[i]) +max(0LL,(n%pots[i])-pots[i-1]);
     }
 
-    for(int l=n-1;l>=0;l--){
-       rep(r,l,n){
-           if(l==r){
-                dpmax[l][r]=a[l];
-                continue;
-           }
-           dpmax[l][r] =  psum[r+1]-psum[l] -min(dpmax[l+1][r],dpmax[l][r-1]);
-        }
-    }
-
-    cout<<dpmax[0][n-1];
- 
-
-}   
+    cout<<ans;
+}

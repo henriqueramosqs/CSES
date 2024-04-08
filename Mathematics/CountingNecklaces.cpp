@@ -9,41 +9,43 @@ using namespace std;
 #define int long long 
 #define ff first
 #define ss second
+#define endl "\n"
 #define pq priority_queue
 typedef vector<int> vi;
+typedef vector<vi> vvi;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
 typedef vector<pair<int,int> > vpp;
-const int MAXN = 5000;
-int n;
-vi a,psum;
+const int MOD = 1e9+7;
 
-int dpmax[MAXN][MAXN];  
+int gcd(int a,int b){
+    return b==0?a:gcd(b,a%b);
+}
+
+
+int binexp(int a,int b){
+    if(b==0)return 1;
+    int ans=binexp(a,b/2);
+    (ans*=ans)%=MOD;
+    if(b%2==1)(ans*=a)%=MOD;
+    return ans;
+}
+
+
+int inv(int a){
+    return binexp(a,MOD-2);    
+}
 
 int32_t main(){
     sws
-    memset(dpmax,0LL,sizeof(dpmax));
-
-    int n;cin>>n;   
-    a.resize(n);
-    psum.resize(n+1);
-    psum[0]=0;
+    int n,m;
+    cin>>n>>m;
+    
+    int ans=0;
     rep(i,0,n){
-        cin>>a[i]; 
-        psum[i+1]=psum[i]+a[i];
+        (ans+=binexp(m,gcd(n,i)))%=MOD;
     }
+    (ans*=inv(n))%=MOD;
 
-    for(int l=n-1;l>=0;l--){
-       rep(r,l,n){
-           if(l==r){
-                dpmax[l][r]=a[l];
-                continue;
-           }
-           dpmax[l][r] =  psum[r+1]-psum[l] -min(dpmax[l+1][r],dpmax[l][r-1]);
-        }
-    }
-
-    cout<<dpmax[0][n-1];
- 
-
-}   
+    cout<<ans;
+}
