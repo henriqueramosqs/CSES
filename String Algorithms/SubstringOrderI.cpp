@@ -1,0 +1,124 @@
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC target("popcnt")
+#define sws ios_base::sync_with_stdio(false);cout.tie(NULL);cin.tie(NULL);
+#define mp make_pair
+#define pb push_back
+#define rep(i, a, b) for (int i = a; i < b; i++)
+#define dbg(x) cout<<#x<<" "<<x<<endl;
+#define output(x) for(auto c:x){cout<<c<<" ";}cout<<" ";
+#define int long long 
+#define ff first
+#define ld long double
+#define ss second
+#define endl "\n"
+#define pq priority_queue
+typedef vector<int> vi;
+typedef vector<vi> vvi;
+typedef vector<bool> vb;
+typedef pair<int, int> pii;
+typedef vector<pair<int,int> > vpp;
+typedef pair<pii,int >pp;
+
+vector<int> sort_cyclic_shifts(string const& s) {
+    int n = s.size();
+    const int alphabet = 256;
+    vector<int> p(n), c(n), cnt(max(alphabet, n), 0);
+    for (int i = 0; i < n; i++)
+        cnt[s[i]]++;
+    for (int i = 1; i < alphabet; i++)
+        cnt[i] += cnt[i-1];
+    for (int i = 0; i < n; i++)
+        p[--cnt[s[i]]] = i;
+    c[p[0]] = 0;
+    int classes = 1;
+    for (int i = 1; i < n; i++) {
+        if (s[p[i]] != s[p[i-1]])
+            classes++;
+        c[p[i]] = classes - 1;
+    }
+    vector<int> pn(n), cn(n);
+ 
+    for (int h = 0; (1 << h) < n; ++h) {
+        for (int i = 0; i < n; i++) {
+            pn[i] = p[i] - (1 << h);
+            if (pn[i] < 0)
+                pn[i] += n;
+        }
+        fill(cnt.begin(), cnt.begin() + classes, 0);
+        for (int i = 0; i < n; i++)
+            cnt[c[pn[i]]]++;
+        for (int i = 1; i < classes; i++)
+            cnt[i] += cnt[i-1];
+        for (int i = n-1; i >= 0; i--)
+            p[--cnt[c[pn[i]]]] = pn[i];
+        cn[p[0]] = 0;
+        classes = 1;
+        for (int i = 1; i < n; i++) {
+            pair<int, int> cur = mp(c[p[i]], c[(p[i] + (1 << h)) % n]);
+            pair<int, int> prev = mp(c[p[i-1]], c[(p[i-1] + (1 << h)) % n]);
+            if (cur != prev)
+                ++classes;
+            cn[p[i]] = classes - 1;
+        }
+        c.swap(cn);
+    }
+    return p;
+}
+ 
+vector<int> suffix_array_construction(string s) {
+    s += "$";
+    vector<int> sorted_shifts = sort_cyclic_shifts(s);
+    sorted_shifts.erase(sorted_shifts.begin());
+    return sorted_shifts;
+}
+
+
+vector<int> lcp_construction(string const& s, vector<int> const& p) {
+    int n = s.size();
+    vector<int> rank(n, 0);
+    for (int i = 0; i < n; i++)
+        rank[p[i]] = i;
+
+    int k = 0;
+    vector<int> lcp(n-1, 0);
+    for (int i = 0; i < n; i++) {
+        if (rank[i] == n - 1) {
+            k = 0;
+            continue;
+        }
+        int j = p[rank[i] + 1];
+        while (i + k < n && j + k < n && s[i+k] == s[j+k])
+            k++;
+        lcp[rank[i]] = k;
+        if (k)
+            k--;
+    }
+    return lcp;
+}
+
+int32_t main(){
+    sws 
+    string s;cin>>s;
+    int k;cin>>k;
+    int n = s.size();
+    vi sa = suffix_array_construction(s);
+    vi lc = lcp_construction(s,sa);
+
+    int last =0;
+
+    rep(i,0,n-1){
+        int l = last+1;
+        int sz =n-sa[i];
+        int disc = (i==0?0:lc[i-1]);
+        int news = sz-disc;
+        int r = last+news;
+        if(l<=k && r>=k){
+            cout<<s.substr(sa[i],k-last+disc);
+            break;
+        }else{
+            last=r;
+        }
+    }
+}
+
